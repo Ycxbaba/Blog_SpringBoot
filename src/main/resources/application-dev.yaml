@@ -1,0 +1,22 @@
+logging:
+  level: debug
+  file:
+    path: /logs/
+  pattern:
+    console: %d{yyyy-MM-dd} [%thread] %-5level %logger{50} -%msg%n
+    file: d{yyyy-MM-dd} [%thread] %-5level %logger{50} -%msg%n
+
+spring:
+  application:
+    name: blog
+
+  datasource:
+    username: root
+    password: 412728
+    url: jdbc:mysql://localhost:3306/blog
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  redis:
+    host: 101.33.208.159
+    port: 6799
+    password: 4Y1c2x78
