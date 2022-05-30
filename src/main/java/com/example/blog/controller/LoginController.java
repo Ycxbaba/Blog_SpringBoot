@@ -3,21 +3,24 @@ package com.example.blog.controller;
 import com.example.blog.entity.bean.User;
 import com.example.blog.entity.result.Result;
 import com.example.blog.service.LoginService;
-import com.example.blog.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+
+import org.springframework.web.bind.annotation.*;
+
+import javax.annotation.Resource;
 
 @RestController
 public class LoginController {
 
-	@Autowired
+	@Resource(type = LoginService.class)
 	private LoginService loginService;
 
-	@PostMapping("/login")
-	public Result login(@RequestBody User user){
-		return loginService.login(user);
+	@PostMapping("/signin")
+	public Result signin(@RequestBody User user){
+		return loginService.signin(user);
+	}
+
+	@DeleteMapping("/signout")
+	public Result signout(@RequestParam("id")String id){
+		return loginService.signout(id);
 	}
 }

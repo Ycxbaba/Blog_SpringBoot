@@ -24,9 +24,16 @@ spring:
 mybatis-plus:
   type-aliases-package: com.example.blog.entity
 
+#自定义的jwt配置
 jwt:
   data:
-    SECRET: dafok4DADf54a5fa1BD1ahj4u1AA2150DAcasda154i5
+    SECRET: dafok4DADf54a5fa1BD1dadaDA4ff5Acasda154i5
     tokenHeader: Authorization
     expiration: 604800 #7days
     tokenHead: Bearer
+
+
+async:
+  corePoolSize: 10
+  maxPoolSize: 200
+  queueCapacity: 10

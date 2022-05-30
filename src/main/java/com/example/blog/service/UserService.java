@@ -3,6 +3,7 @@ package com.example.blog.service;
 import com.example.blog.entity.bean.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.example.blog.entity.result.Result;
+import org.springframework.lang.Nullable;
 
 /**
 * @author 24933
@@ -11,5 +12,14 @@ import com.example.blog.entity.result.Result;
 */
 public interface UserService extends IService<User> {
 
+
+	Result delUserById(Integer id);
+
+	Result updatePw(User user);
+
+	Result getAllUser();
+
+	Result updateUser(User user, String token);
+	Result updateUser(User user);
 
 }

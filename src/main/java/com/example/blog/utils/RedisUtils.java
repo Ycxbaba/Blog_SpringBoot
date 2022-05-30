@@ -1,12 +1,16 @@
 package com.example.blog.utils;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-@Component
+@Slf4j
+@Component(value = "redisUtils")
 public class RedisUtils {
 
 	@Resource(name = "template")
@@ -86,5 +90,47 @@ public class RedisUtils {
 		}catch (Exception e){
 			return false;
 		}
+	}
+
+	/**
+	 * 向set里放入数据
+	 * @param key set key
+	 * @param value value
+	 * @return
+	 */
+	public boolean sAdd(String key,Object value){
+		try {
+			redisTemplate.opsForSet().add(key,value);
+			return true;
+		}catch (Exception e){
+			log.warn("ip地址--{}--添加失败",value);
+			return false;
+		}
+	}
+
+	/**
+	 * 从 set 中 拿到 所有value
+	 * @param key key
+	 * @return 返回set集合
+	 */
+	public Set<Object> sGet(String key){
+		return redisTemplate.opsForSet().members(key);
+	}
+
+	/**
+	 *  zSet 保存值
+	 */
+	public boolean zsAdd(String key,Object value){
+		try {
+			redisTemplate.opsForZSet().incrementScore(key,value,1);
+			return true;
+		}catch (Exception e){
+			log.warn("{}--{}--添加失败",key,value);
+			return false;
+		}
+	}
+
+	public Set<ZSetOperations.TypedTuple<Object>> zsGet(String key){
+		return	redisTemplate.opsForZSet().rangeByScoreWithScores(key, 0, 1000);
 	}
 }

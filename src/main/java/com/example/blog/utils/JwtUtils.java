@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Calendar;
 import java.util.Date;
 
-@Component
+@Component(value = "jwtUtils")
 @Slf4j
 public class JwtUtils {
 

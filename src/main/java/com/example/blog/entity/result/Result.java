@@ -1,5 +1,10 @@
 package com.example.blog.entity.result;
 
+import lombok.Data;
+import lombok.ToString;
+
+@Data
+@ToString
 public class Result {
 	private String code;
 	private String msg;

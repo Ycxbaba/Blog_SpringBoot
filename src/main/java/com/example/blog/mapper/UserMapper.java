@@ -11,10 +11,11 @@ import org.springframework.stereotype.Repository;
 * @createDate 2022-05-10 21:16:49
 * @Entity com.example.blog.entity.bean.User
 */
-@Repository
+@Repository(value = "userMapper")
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
 
+	User selectByUsername(String username);
 }
 
 

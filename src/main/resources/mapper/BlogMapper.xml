@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog.mapper.BlogMapper">
+
+    <resultMap id="BaseResultMap" type="com.example.blog.entity.bean.Blog">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="typeId" column="type_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="views" column="views" jdbcType="INTEGER"/>
+            <result property="likes" column="likes" jdbcType="INTEGER"/>
+            <result property="publish" column="publish" jdbcType="TINYINT"/>
+            <result property="original" column="original" jdbcType="TINYINT"/>
+            <result property="commented" column="commented" jdbcType="TINYINT"/>
+            <result property="recommend" column="recommend" jdbcType="TINYINT"/>
+            <result property="information" column="information" jdbcType="VARCHAR"/>
+            <result property="image" column="image" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <update id="update">
+        update t_blog set
+            <if test="views != null">
+                views = views + #{views}
+            </if>
+        where id = #{id} and deleted = 0 and publish = 1
+    </update>
+</mapper>

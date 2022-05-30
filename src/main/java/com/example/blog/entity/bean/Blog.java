@@ -6,19 +6,17 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-
 import lombok.Data;
 
 /**
  *
- * @TableName t_user
+ * @TableName t_blog
  */
-@TableName(value ="t_user")
+@TableName(value ="t_blog")
 @Data
-public class User implements Serializable {
+public class Blog implements Serializable {
     /**
-     *
+     * 博文id
      */
     @TableId(type = IdType.AUTO)
     private Integer id;
@@ -36,31 +34,63 @@ public class User implements Serializable {
     /**
      *
      */
-    private String username;
-
-    /**
-     *
-     */
-    private String password;
-
-    /**
-     *
-     */
-    private String nickname;
-
-    /**
-     *
-     */
-    private String avatar;
-
-    /**
-     *
-     */
     private Integer deleted;
+
+    /**
+     *
+     */
+    private String title;
+
+    /**
+     *
+     */
+    private Integer typeId;
+
+    /**
+     *
+     */
+    private Integer userId;
+
+    /**
+     *
+     */
+    private Integer views;
+
+    /**
+     *
+     */
+    private Integer likes;
+
+    /**
+     *
+     */
+    private Integer publish;
+
+    /**
+     *
+     */
+    private Integer original;
+
+    /**
+     *
+     */
+    private Integer commented;
+
+    /**
+     *
+     */
+    private Integer recommend;
+
+    /**
+     *
+     */
+    private String information;
+
+    /**
+     *
+     */
+    private String image;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
-
-    @TableField(exist = false)
-    private List<String> roles;
 }

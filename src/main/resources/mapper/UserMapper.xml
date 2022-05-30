@@ -12,12 +12,23 @@
             <result property="password" column="password" jdbcType="VARCHAR"/>
             <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
             <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
-            <result property="delete" column="delete" jdbcType="TINYINT"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
     </resultMap>
 
-    <sql id="Base_Column_List">
-        id,create_time,update_time,
-        username,password,nickname,
-        avatar,`delete`
-    </sql>
+    <select id="selectByUsername" resultMap="loginUser">
+        select tu.id,nickname,password,avatar
+        from t_user tu
+        where tu.deleted = 0 and username = #{username}
+    </select>
+    <resultMap id="loginUser" type="user">
+        <id property="id" column="id"/>
+        <result property="nickname" column="nickname"/>
+        <result property="password" column="password"/>
+        <collection property="roles" ofType="string" select="selectRole" column="{id=id}"/>
+    </resultMap>
+    <select id="selectRole" resultType="string">
+        select tr.value
+        from t_role tr join t_user_role tur on tr.id = tur.role_id
+        where user_id = #{id} and tr.`delete` = 0 and tur.`delete` = 0
+    </select>
 </mapper>

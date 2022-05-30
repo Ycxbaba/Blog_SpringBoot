@@ -3,9 +3,13 @@ package com.example.blog.config;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.example.blog.exception.AccessDeniedHandlerImpl;
 import com.example.blog.exception.AuthenticationEntryPointImpl;
 import com.example.blog.filter.JWTAuthTokenFilter;
+import com.example.blog.filter.StrangerFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -16,18 +20,31 @@ import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+	/**
+	 *  分页插件
+	 */
+	@Bean
+	public MybatisPlusInterceptor mybatisPlusInterceptor() {
+		MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+		interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+		return interceptor;
+	}
 
 	/**
 	 *  配置redis
@@ -78,15 +95,23 @@ public class WebConfig implements WebMvcConfigurer {
 				.maxAge(3600)
 				.allowedMethods("*")
 				.allowCredentials(true)
-				.allowedOrigins("*");
+				.allowedOriginPatterns("*");
+
 	}
 
 	/**
 	 * spring security 相关配置
 	 */
 	@Configuration
+	@EnableWebSecurity
 	@EnableGlobalMethodSecurity(prePostEnabled = true)
 	public static class SecurityConfig extends WebSecurityConfigurerAdapter{
+
+		@Resource(name = "JWTAuthTokenFilter")
+		private JWTAuthTokenFilter jwtAuthTokenFilter;
+
+		@Resource(name = "strangerFilter")
+		private StrangerFilter strangerFilter;
 
 		@Bean(name = "authenticationManager")
 		@Override
@@ -107,11 +132,13 @@ public class WebConfig implements WebMvcConfigurer {
 					.and()
 					.authorizeRequests()
 					.antMatchers("/**").permitAll()
-					.antMatchers("/login").anonymous()
+					.antMatchers("/signin").anonymous()
+					.antMatchers("/signout","/admin/**").authenticated()
 					.anyRequest().authenticated();
 
 			//配置jwt过滤器
-			http.addFilterBefore(new JWTAuthTokenFilter(), UsernamePasswordAuthenticationFilter.class);
+			http.addFilterBefore(jwtAuthTokenFilter, UsernamePasswordAuthenticationFilter.class)
+					.addFilterAfter(strangerFilter,JWTAuthTokenFilter.class);
 			//跨域配置
 			http.cors();
 			//配置自定义异常处理
@@ -120,6 +147,14 @@ public class WebConfig implements WebMvcConfigurer {
 					.authenticationEntryPoint(new AuthenticationEntryPointImpl())
 					.accessDeniedHandler(new AccessDeniedHandlerImpl());
 
+		}
+
+		/**
+		 * 加密配置;
+		 */
+		@Bean
+		public PasswordEncoder passwordEncoder(){
+			return new BCryptPasswordEncoder();
 		}
 	}
 }

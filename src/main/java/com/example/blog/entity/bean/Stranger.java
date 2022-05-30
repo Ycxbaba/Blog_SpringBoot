@@ -6,61 +6,56 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
-
 import lombok.Data;
 
 /**
- *
- * @TableName t_user
+ * 
+ * @TableName t_stranger
  */
-@TableName(value ="t_user")
+@TableName(value ="t_stranger")
 @Data
-public class User implements Serializable {
+public class Stranger implements Serializable {
     /**
-     *
+     * 
      */
     @TableId(type = IdType.AUTO)
     private Integer id;
 
     /**
-     *
+     * 
      */
     private Date createTime;
 
     /**
-     *
+     * 
      */
     private Date updateTime;
 
     /**
-     *
+     * 
      */
-    private String username;
+    private String ip;
 
     /**
-     *
-     */
-    private String password;
-
-    /**
-     *
-     */
-    private String nickname;
-
-    /**
-     *
-     */
-    private String avatar;
-
-    /**
-     *
+     * 
      */
     private Integer deleted;
 
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    /**
+     * 
+     */
+    private Integer count;
+
+    /**
+     * 
+     */
+    private String city;
+
+    /**
+     * 
+     */
+    private String province;
 
     @TableField(exist = false)
-    private List<String> roles;
+    private static final long serialVersionUID = 1L;
 }
