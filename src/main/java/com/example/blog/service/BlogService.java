@@ -18,4 +18,10 @@ public interface BlogService extends IService<Blog> {
 	Result getBlogById(int id);
 
 	int updateView(int id,int count);
+
+	Result saveBlog(Blog blog);
+
+	Result delBlog(int id);
+
+	Result delete(int id);
 }

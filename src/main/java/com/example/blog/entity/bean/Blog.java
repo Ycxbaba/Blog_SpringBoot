@@ -93,4 +93,10 @@ public class Blog implements Serializable {
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+    @TableField(exist = false)
+    private User user;
+
+    @TableField(exist = false)
+    private String typeName;
 }

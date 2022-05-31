@@ -1,7 +1,9 @@
 package com.example.blog.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.example.blog.entity.bean.Blog;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.blog.entity.query.QueryBlog;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Repository;
 public interface BlogMapper extends BaseMapper<Blog> {
 
 	int update(Blog blog);
+	IPage<Blog> selectBlogPage(IPage<Blog> page, QueryBlog queryBlog);
 }
 
 

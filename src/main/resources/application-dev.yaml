@@ -2,6 +2,8 @@ logging:
   level:
     com.example.blog: debug
     com.example.blog.scheduled: info
+    com.example.blog.exception: error
+    com.example.blog.controller: warn
   file:
     path: /logs/
 spring:

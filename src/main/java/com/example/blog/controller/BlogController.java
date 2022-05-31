@@ -16,16 +16,12 @@ public class BlogController {
 	private BlogService blogService;
 
 	/**
-	 * 分页查询 前端
-	 * @param pageSize 每页大小
-	 * @param pageNum 当前页码
+	 * 分页查询 普通用户
 	 */
 	@GetMapping("/list")
-	public Result getBlogList(@RequestParam(name = "pageSize",defaultValue = "8")int pageSize,
-	                          @RequestParam(name = "pageNum",defaultValue = "1")int pageNum){
-		QueryBlog queryBlog = new QueryBlog();
-		queryBlog.setPageNum(pageNum);
-		queryBlog.setPageSize(pageSize);
+	public Result getBlogList(@RequestBody QueryBlog queryBlog){
+		queryBlog.setDeleted(false);
+		queryBlog.setPublish(true);
 		return blogService.getBlogPage(queryBlog);
 	}
 
@@ -41,9 +37,11 @@ public class BlogController {
 	 * 点赞
 	 * @param id 博文 id
 	 */
-	@GetMapping("/like/{id}")
+	@PutMapping("/like/{id}")
 	public Result like(@PathVariable("id") int id){
 		return Result.success("ok");
 	}
+
+
 
 }
