@@ -21,7 +21,7 @@ public class AdminBlogController {
 	 * @param queryBlog 查询类
 	 */
 	@PreAuthorize("hasAnyAuthority('superAdmin','admin')")
-	@GetMapping("/list")
+	@PostMapping("/list")
 	public Result getBlog(@RequestBody QueryBlog queryBlog){
 		return blogService.getBlogPage(queryBlog);
 	}
@@ -56,4 +56,12 @@ public class AdminBlogController {
 		return blogService.delBlog(id);
 	}
 
+	/**
+	 * 恢复
+	 */
+	@PreAuthorize("hasAnyAuthority('superAdmin','admin')")
+	@PutMapping("/recover/{id}")
+	public Result recover(@PathVariable("id")int id){
+		return blogService.recover(id);
+	}
 }

@@ -4,6 +4,7 @@ import com.example.blog.entity.bean.User;
 import com.example.blog.entity.bean.UserDetailImpl;
 import com.example.blog.entity.result.Result;
 
+import com.example.blog.exception.CommonException;
 import com.example.blog.service.LoginService;
 import com.example.blog.utils.JwtUtils;
 import com.example.blog.utils.RedisUtils;
@@ -35,12 +36,15 @@ public class LoginServiceImpl implements LoginService {
 	 */
 	@Override
 	public Result signin(User user) {
+		if(user.getUsername() == null || user.getPassword() == null){
+			throw new CommonException("401","验证失败");
+		}
 		//去数据库查询
 		UsernamePasswordAuthenticationToken authenticationToken =
 				new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword());
 		Authentication authenticate = authenticationManager.authenticate(authenticationToken);
 		if (authenticate == null) {
-			throw new RuntimeException("验证失败");
+			throw new CommonException("401","验证失败");
 		}
 		//得到结果
 		UserDetailImpl principal = (UserDetailImpl) authenticate.getPrincipal();
@@ -54,7 +58,7 @@ public class LoginServiceImpl implements LoginService {
 		Map<String,Object> map = new HashMap<>();
 		map.put("token",token);
 		map.put("user",principalUser);
-		return Result.success(map);
+		return Result.success("登录成功",map);
 	}
 
 	/**
@@ -65,7 +69,7 @@ public class LoginServiceImpl implements LoginService {
 	public Result signout(String id) {
 		String key = "user"+id;
 		if (!redisUtils.hasKey(key)) {
-			throw new RuntimeException("已经登出了");
+			throw new CommonException("401","已经登出了");
 		}
 		redisUtils.del(key);
 		return Result.success("登出成功",null);

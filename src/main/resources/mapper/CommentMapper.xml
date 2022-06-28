@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog.mapper.CommentMapper">
+
+    <resultMap id="Comments" type="com.example.blog.entity.bean.Comment">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+            <result property="author" column="author" jdbcType="TINYINT"/>
+            <result property="parentId" column="parent_id" jdbcType="INTEGER"/>
+            <result property="content" column="content" jdbcType="VARCHAR"/>
+            <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+            <result property="qq" column="qq" jdbcType="VARCHAR"/>
+            <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+            <result property="email" column="email" jdbcType="VARCHAR"/>
+            <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+    </resultMap>
+    <resultMap id="CommentMap" type="com.example.blog.entity.bean.Comment">
+        <result property="blogTitle" column="title" jdbcType="VARCHAR"/>
+        <result property="blogId" column="blog_id" jdbcType="INTEGER"/>
+        <result property="count" column="count" javaType="Integer"/>
+        <collection property="childrenComment" column="{blogId=blog_id,deleted=del,day=day}" javaType="ArrayList" select="getComments" ofType="comment">
+        </collection>
+    </resultMap>
+
+    <select id="getComment" resultMap="CommentMap">
+        select tc.blog_id,tb.title,count(tc.blog_id) count,#{deleted} as del, #{day} as day
+        from t_comment tc join t_blog tb on tb.id = tc.blog_id
+        <where>
+            <if test="blogId != null">
+                and blog_id = #{blogId}
+            </if>
+            <if test="deleted != null">
+                and tc.deleted = #{deleted}
+            </if>
+        </where>
+        group by blog_id
+    </select>
+
+    <select id="getComments" resultMap="Comments">
+        select tc.id, tc.update_time, tc.create_time, tc.deleted, tc.author,
+        tc.parent_id, tc.content, tc.nickname, tc.qq, tc.avatar, tc.blog_id,tc.email
+        from t_comment tc
+        <where>
+            <if test="blogId != null">
+                and blog_id = #{blogId}
+            </if>
+            <if test="deleted != null">
+                and deleted = #{deleted}
+            </if>
+            <if test="day != null">
+                and create_time >= date_sub(now(),INTERVAL #{day} DAY)
+            </if>
+        </where>
+        order by tc.create_time desc
+    </select>
+</mapper>

@@ -51,7 +51,6 @@ public class JwtUtils {
 					.parseClaimsJws(token)
 					.getBody();
 		}catch (Exception e){
-			log.error("jwt match error:{}",e.getMessage());
 			return null;
 		}
 	}

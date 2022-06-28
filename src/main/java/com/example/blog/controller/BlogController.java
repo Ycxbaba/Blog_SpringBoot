@@ -18,7 +18,8 @@ public class BlogController {
 	/**
 	 * 分页查询 普通用户
 	 */
-	@GetMapping("/list")
+	@RAnnotation(key = "blogList",time = 10)
+	@PostMapping("/list")
 	public Result getBlogList(@RequestBody QueryBlog queryBlog){
 		queryBlog.setDeleted(false);
 		queryBlog.setPublish(true);
@@ -28,6 +29,7 @@ public class BlogController {
 	/**
 	 *  前端页面展示博文内容
 	 */
+	@RAnnotation(key = "blog",time = 20)
 	@GetMapping("/{id}")
 	public Result getBlog(@PathVariable("id") int id){
 		return blogService.getBlogById(id);
@@ -42,6 +44,9 @@ public class BlogController {
 		return Result.success("ok");
 	}
 
-
+	@PostMapping("/archive")
+	public Result getBlogArchive(){
+		return blogService.getBlogArchive();
+	}
 
 }

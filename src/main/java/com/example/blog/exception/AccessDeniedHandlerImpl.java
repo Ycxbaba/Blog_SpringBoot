@@ -16,7 +16,7 @@ public class AccessDeniedHandlerImpl implements AccessDeniedHandler {
 	@Override
 	public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException)
 			throws IOException, ServletException {
-		Result result = Result.fail("401","认证失败");
+		Result result = Result.fail("403","权限不足");
 		response.setContentType("application/json; charset=utf-8");
 		response.setStatus(HttpStatus.OK.value());
 		PrintWriter writer = response.getWriter();

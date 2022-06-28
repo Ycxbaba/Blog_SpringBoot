@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.blog.mapper.BlogMapper">
 
-    <update id="update">
+    <update id="updateView">
         update t_blog set
             <if test="views != null">
                 views = views + #{views}
@@ -15,15 +15,20 @@
     <select id="selectBlogPage" resultMap="QueryBlog">
         select tb.id,tb.create_time,tb.title,tb.update_time,tb.views,
                tb.likes,tb.original,tb.commented,tb.information,
-               tb.image,tb.user_id,tb.deleted,
-               tt.value,
+               tb.image,tb.user_id,tb.deleted,tb.publish,tb.type_id,
+               tb.content_id,
+               tt.value,tt.color,
                tu.nickname,tu.avatar
 
         from t_blog tb
             join t_type tt on tb.type_id = tt.id
             join t_user tu on tb.user_id = tu.id
+            join t_content tc on tc.id = tb.content_id
 
-        where 1=1
+        <where>
+            <if test="queryBlog.excludeId != null">
+                and tb.id != #{queryBlog.excludeId}
+            </if>
             <if test="queryBlog.deleted != null">
                 and tb.deleted = #{queryBlog.deleted}
             </if>
@@ -47,7 +52,7 @@
             <if test="queryBlog.typeId != null">
                 and tb.type_id = #{queryBlog.typeId}
             </if>
-
+        </where>
         order by
             <if test="queryBlog.mostLike != null">
                 tb.likes
@@ -63,11 +68,49 @@
             </if>
 
     </select>
-
+    <select id="getById" resultMap="BlogDetail">
+        select tb.id,tb.title,tb.update_time,tb.views,
+               tb.likes,tb.original,tb.commented,
+               tb.image,tb.user_id,tb.type_id,
+               tb.content_id,
+               tt.value,tt.color,
+               tu.nickname,tu.avatar
+        from t_blog tb
+                 join t_type tt on tb.type_id = tt.id
+                 join t_user tu on tb.user_id = tu.id
+                 join t_content tc on tc.id = tb.content_id
+        where tb.id = #{id} and publish = 1 and tb.deleted = 0
+    </select>
+    <resultMap id="BlogDetail" type="com.example.blog.entity.bean.Blog">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="contentId" column="content_id" jdbcType="INTEGER"/>
+        <result property="typeId" column="type_id" jdbcType="INTEGER"/>
+        <result property="title" column="title" jdbcType="VARCHAR"/>
+        <result property="views" column="views" jdbcType="INTEGER"/>
+        <result property="likes" column="likes" jdbcType="INTEGER"/>
+        <result property="original" column="original" jdbcType="TINYINT"/>
+        <result property="recommend" column="recommend" jdbcType="TINYINT"/>
+        <result property="commented" column="commented" jdbcType="TINYINT"/>
+        <result property="information" column="information" jdbcType="VARCHAR"/>
+        <result property="image" column="image" jdbcType="VARCHAR"/>
+        <association property="user" javaType="user">
+            <id property="id" column="user_id" jdbcType="INTEGER"/>
+            <result property="nickname" column="nickname"/>
+            <result property="avatar" column="avatar"/>
+        </association>
+        <association property="type" javaType="type">
+            <id property="id" column="type_id" jdbcType="INTEGER"/>
+            <result property="value" column="value" jdbcType="VARCHAR"/>
+            <result property="color" column="color" jdbcType="VARCHAR"/>
+        </association>
+    </resultMap>
     <resultMap id="QueryBlog" type="com.example.blog.entity.bean.Blog">
         <id property="id" column="id" jdbcType="INTEGER"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
         <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="contentId" column="content_id" jdbcType="INTEGER"/>
+        <result property="typeId" column="type_id" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="views" column="views" jdbcType="INTEGER"/>
         <result property="likes" column="likes" jdbcType="INTEGER"/>
@@ -78,11 +121,15 @@
         <result property="commented" column="commented" jdbcType="TINYINT"/>
         <result property="information" column="information" jdbcType="VARCHAR"/>
         <result property="image" column="image" jdbcType="VARCHAR"/>
-        <result property="typeName" column="value" jdbcType="VARCHAR"/>
         <association property="user" javaType="user">
             <id property="id" column="user_id" jdbcType="INTEGER"/>
             <result property="nickname" column="nickname"/>
             <result property="avatar" column="avatar"/>
+        </association>
+        <association property="type" javaType="type">
+            <id property="id" column="type_id" jdbcType="INTEGER"/>
+            <result property="value" column="value" jdbcType="VARCHAR"/>
+            <result property="color" column="color" jdbcType="VARCHAR"/>
         </association>
     </resultMap>
 </mapper>

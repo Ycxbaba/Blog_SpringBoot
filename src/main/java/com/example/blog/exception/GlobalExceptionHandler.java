@@ -17,4 +17,11 @@ public class GlobalExceptionHandler{
 		return Result.fail(e.getCode(),e.getMsg());
 	}
 
+	@ExceptionHandler(value = RuntimeException.class)
+	@ResponseBody
+	public Result handle(RuntimeException e){
+		log.error("出现了 ===> { } 的错误",e.getCause());
+		return Result.fail("500","服务器内部错误");
+	}
+
 }

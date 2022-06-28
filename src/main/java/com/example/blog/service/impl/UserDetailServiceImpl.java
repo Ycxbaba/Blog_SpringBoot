@@ -20,6 +20,9 @@ public class UserDetailServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		//查询数据库
 		User user = userMapper.selectByUsername(username);
+		if(user == null){
+			throw new UsernameNotFoundException("未找到该用户");
+		}
 		//封装为UserDetails
 		UserDetailImpl userDetail = new UserDetailImpl();
 		userDetail.setUser(user);

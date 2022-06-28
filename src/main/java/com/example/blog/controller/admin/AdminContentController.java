@@ -25,10 +25,33 @@ public class AdminContentController {
 		return contentService.getContentNoCatalog(id);
 	}
 
+	/**
+	 * 修改和保存
+	 * @param content 内容
+	 */
 	@PreAuthorize("hasAnyAuthority('superAdmin','admin')")
 	@PostMapping ("/save")
 	public Result saveContent(@RequestBody Content content){
 		return contentService.saveContent(content);
 	}
 
+	/**
+	 * 逻辑删除
+	 * @param id id
+	 */
+	@PreAuthorize("hasAnyAuthority('superAdmin','admin')")
+	@PutMapping ("/delete/{id}")
+	public Result delContent(@PathVariable("id")int id){
+		return contentService.delContent(id);
+	}
+
+	/**
+	 * 永久删除 超级管理员权限
+	 * @param id id
+	 */
+	@PreAuthorize("hasAuthority('superAdmin')")
+	@DeleteMapping ("/delete/{id}")
+	public Result delete(@PathVariable("id")int id){
+		return contentService.delete(id);
+	}
 }

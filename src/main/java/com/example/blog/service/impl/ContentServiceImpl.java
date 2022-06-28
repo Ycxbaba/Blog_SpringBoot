@@ -8,6 +8,7 @@ import com.example.blog.entity.result.Result;
 import com.example.blog.service.ContentService;
 import com.example.blog.mapper.ContentMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 
@@ -48,14 +49,8 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content>
 	 */
 	private Result getContent(int id , boolean hasCatalog){
 		LambdaQueryWrapper<Content> wrapper = new LambdaQueryWrapper<>();
-		wrapper.eq(Content::getBlogId,id);
+		wrapper.eq(Content::getId,id);
 		Content content = super.getOne(wrapper);
-		// todo  解析出目录
-		if(hasCatalog){
-			System.out.println("1111");
-		}else {
-			return Result.success(content);
-		}
 		return Result.success(content);
 	}
 
@@ -64,6 +59,7 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content>
 	 * @param content 内容
 	 */
 	@Override
+	@Transactional
 	public Result saveContent(Content content) {
 		Integer id = content.getId();
 		if(id == null){
@@ -72,10 +68,37 @@ public class ContentServiceImpl extends ServiceImpl<ContentMapper, Content>
 			}
 		}else {
 			if (super.updateById(content)) {
-				return Result.success("修改成功",null);
+				return Result.success("修改成功",content.getId());
 			}
 		}
-		return Result.fail("500","操作失败");
+		return Result.fail("600","操作失败");
+	}
+
+	/**
+	 * 逻辑删除
+	 * @param id id
+	 */
+	@Override
+	public Result delContent(int id) {
+		Content content = new Content();
+		content.setDeleted(1);
+		content.setId(id);
+		if (super.updateById(content)) {
+			return Result.success("删除成功",null);
+		}
+		return Result.fail("500","删除失败");
+	}
+
+	/**
+	 * 永久删除
+	 * @param id id
+	 */
+	@Override
+	public Result delete(int id) {
+		if (super.removeById(id)) {
+			return Result.success("永久删除成功",null);
+		}
+		return Result.fail("500","永久删除失败");
 	}
 }
 

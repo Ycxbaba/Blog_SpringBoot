@@ -13,13 +13,14 @@ import java.util.Date;
 @ToString
 public class QueryBlog {
 	private Integer pageNum = 1;
-	private Integer pageSize = 6;
+	private Integer pageSize = 10000;
 	private Integer typeId = null;
 	private String title = null;
 	private Boolean deleted = null;
 	private Boolean publish = null;
 	private Boolean original = null;
 	private Boolean recommend = null;
+	private Integer excludeId = null;
 	//排序
 	private Boolean latest = true;
 	private Boolean mostLike = null;

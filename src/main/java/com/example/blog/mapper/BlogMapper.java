@@ -17,8 +17,10 @@ import org.springframework.stereotype.Repository;
 @Repository("blogMapper")
 public interface BlogMapper extends BaseMapper<Blog> {
 
-	int update(Blog blog);
+	int updateView(Blog blog);
 	IPage<Blog> selectBlogPage(IPage<Blog> page, QueryBlog queryBlog);
+
+	Blog getById(int id);
 }
 
 

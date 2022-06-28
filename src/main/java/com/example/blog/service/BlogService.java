@@ -24,4 +24,8 @@ public interface BlogService extends IService<Blog> {
 	Result delBlog(int id);
 
 	Result delete(int id);
+
+	Result recover(int id);
+
+	Result getBlogArchive();
 }

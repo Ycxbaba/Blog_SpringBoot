@@ -1,6 +1,7 @@
 package com.example.blog.filter;
 
 import com.example.blog.entity.bean.UserDetailImpl;
+import com.example.blog.exception.CommonException;
 import com.example.blog.utils.JwtUtils;
 import com.example.blog.utils.RedisUtils;
 import io.jsonwebtoken.Claims;
@@ -38,14 +39,19 @@ public class JWTAuthTokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		//请求头中获取 token
 		String token = request.getHeader("token");
-		if(Strings.hasText(token)){
+		if(Strings.hasText(token) && !"null".equals(token)){
 			//解析token
 			Claims claims = jwtUtils.parseToken(token);
+			if(claims == null){
+				filterChain.doFilter(request,response);
+				return;
+			}
 			String id = claims.getSubject();
 			//查询缓存
 			UserDetailImpl userDetail = (UserDetailImpl) redisUtils.get("user" + id);
 			if (Objects.isNull(userDetail)) {
-				throw new RuntimeException("token过期了");
+				filterChain.doFilter(request,response);
+				return;
 			}
 			//认证通过 将权限信息放入上下文中
 			UsernamePasswordAuthenticationToken authenticationToken =

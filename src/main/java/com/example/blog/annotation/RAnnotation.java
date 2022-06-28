@@ -6,5 +6,6 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Documented
 public @interface RAnnotation {
-	String type() default "";
+	String key();
+	int time() default 1 ;
 }

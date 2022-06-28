@@ -16,4 +16,8 @@ public interface ContentService extends IService<Content> {
 	Result getContentNoCatalog(int id);
 
 	Result saveContent(Content content);
+
+	Result delContent(int id);
+
+	Result delete(int id);
 }

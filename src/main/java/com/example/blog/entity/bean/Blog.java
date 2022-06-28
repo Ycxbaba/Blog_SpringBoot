@@ -51,6 +51,8 @@ public class Blog implements Serializable {
      */
     private Integer userId;
 
+    private Integer contentId;
+
     /**
      *
      */
@@ -98,5 +100,8 @@ public class Blog implements Serializable {
     private User user;
 
     @TableField(exist = false)
-    private String typeName;
+    private Type type;
+
+    @TableField(exist = false)
+    private Content content;
 }

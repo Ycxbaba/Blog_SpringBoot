@@ -22,9 +22,13 @@ spring:
   redis:
     jedis:
       pool:
-        max-idle: 1
         max-active: 8
+        max-wait: -1ms
+        max-idle: 8
+        min-idle: 0
+    timeout: 2000ms
     database: 0
+
 
   application:
     name: blog

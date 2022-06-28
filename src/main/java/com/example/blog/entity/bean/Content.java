@@ -31,19 +31,9 @@ public class Content implements Serializable {
      */
     private Date createTime;
 
-    /**
-     *
-     */
+
     private Integer deleted;
 
-    /**
-     *
-     */
-    private Integer blogId;
-
-    /**
-     *
-     */
     private String content;
 
     @TableField(exist = false)

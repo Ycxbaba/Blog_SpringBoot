@@ -1,10 +1,11 @@
 package com.example.blog.scheduled;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.example.blog.entity.bean.Blog;
 import com.example.blog.entity.bean.Stranger;
 import com.example.blog.service.BlogService;
 import com.example.blog.service.StrangerService;
-import com.example.blog.utils.IpUtils;
+import com.example.blog.utils.ApiUtils;
 import com.example.blog.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ZSetOperations;
@@ -30,8 +31,8 @@ public class RedisScheduled {
 	@Resource(name = "blogService")
 	private BlogService blogService;
 
-	@Resource(name = "ipUtils")
-	private IpUtils ipUtils;
+	@Resource(name = "ApiUtils")
+	private ApiUtils apiUtils;
 
 	/**
 	 * 每天23：00 将 ip统计入数据库
@@ -46,7 +47,7 @@ public class RedisScheduled {
 				Double score = address.getScore();
 				String ip = (String) address.getValue();
 				//查询地址
-				String realAddress = ipUtils.getRealAddress(ip);
+				String realAddress = apiUtils.getRealAddress(ip);
 				String[] split = realAddress.split(",");
 				String province = split[0];
 				String city = split[1];
@@ -84,6 +85,28 @@ public class RedisScheduled {
 				log.info("日期:{}--博客:{}--被访问了{}次",new Date(),id,score.intValue());
 			}
 			redisUtils.del("blogView");
+		}
+	}
+
+	/**
+	 * 统计点赞数
+	 */
+	@Scheduled(cron = "0 0 */2 * * ?")
+	public void saveLikeToMySql(){
+		Set<ZSetOperations.TypedTuple<Object>> blogLike = redisUtils.zsGet("blogLike");
+		UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
+		if(blogLike != null && blogLike.size() != 0){
+			for (ZSetOperations.TypedTuple<Object> like : blogLike) {
+				Double score = like.getScore();
+				int id = (int) like.getValue();
+				assert score != null;
+				int count = score.intValue();
+				updateWrapper.eq("id",id).setSql("likes = likes + " + count);
+				blogService.update(updateWrapper);
+				updateWrapper.clear();
+				log.info("日期:{}--博客:{}--被访问了{}次",new Date(),id,score.intValue());
+			}
+			redisUtils.del("blogLike");
 		}
 	}
 
