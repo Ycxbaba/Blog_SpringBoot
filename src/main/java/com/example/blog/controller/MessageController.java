@@ -16,14 +16,14 @@ public class MessageController {
 	@Resource(name = "messageService")
 	private MessageService messageService;
 
-	@GetMapping
-	public Result getMessages(){
-		QueryMessage queryMessage = new QueryMessage();
+	@PostMapping("/list")
+	public Result getMessages(@RequestBody QueryMessage queryMessage){
 		queryMessage.setDeleted(0);
+		queryMessage.setQq(null);
 		return messageService.getMessages(queryMessage);
 	}
 
-	@PostMapping
+	@PostMapping("/save")
 	public Result replyMessage(@RequestBody Message message){
 		return messageService.reply(message);
 	}

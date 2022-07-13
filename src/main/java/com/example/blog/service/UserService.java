@@ -22,4 +22,14 @@ public interface UserService extends IService<User> {
 	Result updateUser(User user, String token);
 	Result updateUser(User user);
 
+	Result getSelf(Integer id, String token);
+
+	Result getAllRoles();
+
+	Result deleteById(Integer id);
+
+	Result recover(Integer id);
+
+	Result saveUser(User user);
+
 }

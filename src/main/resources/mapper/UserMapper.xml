@@ -14,7 +14,41 @@
             <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
             <result property="deleted" column="deleted" jdbcType="TINYINT"/>
     </resultMap>
+    <insert id="saveUR">
+        insert into t_user_role (user_id,role_id) values(#{userId},#{roleId})
+    </insert>
+    <update id="setRole">
+        update t_user_role set role_id = #{roleId}
+        where user_id = #{userId}
+    </update>
+    <delete id="deleteUR">
+        delete from t_user_role where user_id  = #{id}
+    </delete>
+    <select id="selectSelf" resultMap="userInfo">
+        select tu.id,nickname,avatar,create_time,update_time,username,deleted
+        from t_user tu
+        <where>
+            <if test="id != null">
+                id = #{id}
+            </if>
+        </where>
+    </select>
+    <resultMap id="userInfo" type="user">
+        <id property="id" column="id"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="username" column="username" jdbcType="VARCHAR"/>
+        <result property="nickname" column="nickname" jdbcType="VARCHAR"/>
+        <result property="avatar" column="avatar" jdbcType="VARCHAR"/>
+        <result property="deleted" column="deleted" jdbcType="TINYINT"/>
+        <association property="role" select="selectRoleObj" column="{id=id}"/>
+    </resultMap>
 
+    <select id="selectRoleObj" resultType="com.example.blog.entity.bean.Role">
+        select tr.value,tr.id
+        from t_role tr join t_user_role tur on tr.id = tur.role_id
+        where tur.user_id = #{id} and tr.`delete` = 0 and tur.`delete` = 0
+    </select>
     <select id="selectByUsername" resultMap="loginUser">
         select tu.id,nickname,password,avatar
         from t_user tu
@@ -30,5 +64,13 @@
         select tr.value
         from t_role tr join t_user_role tur on tr.id = tur.role_id
         where user_id = #{id} and tr.`delete` = 0 and tur.`delete` = 0
+    </select>
+    <select id="selectAll" resultMap="userInfo">
+        select tu.id,nickname,avatar,create_time,update_time,username,deleted
+        from t_user tu
+    </select>
+    <select id="getAllRoles" resultType="com.example.blog.entity.bean.Role">
+        select id,value
+        from t_role
     </select>
 </mapper>

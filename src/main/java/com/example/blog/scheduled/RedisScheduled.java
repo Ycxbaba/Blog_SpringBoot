@@ -2,8 +2,10 @@ package com.example.blog.scheduled;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.example.blog.entity.bean.Blog;
+import com.example.blog.entity.bean.Site;
 import com.example.blog.entity.bean.Stranger;
 import com.example.blog.service.BlogService;
+import com.example.blog.service.SiteService;
 import com.example.blog.service.StrangerService;
 import com.example.blog.utils.ApiUtils;
 import com.example.blog.utils.RedisUtils;
@@ -33,6 +35,9 @@ public class RedisScheduled {
 
 	@Resource(name = "ApiUtils")
 	private ApiUtils apiUtils;
+
+	@Resource(name = "siteService")
+	private SiteService siteService;
 
 	/**
 	 * 每天23：00 将 ip统计入数据库
@@ -70,10 +75,15 @@ public class RedisScheduled {
 	}
 
 	/**
-	 * 每2个小时执行一次
+	 * 每4个小时执行一次
 	 */
-	@Scheduled(cron = "0 0 */2 * * ?")
-	public void saveViewToMySql(){
+	@Scheduled(cron = "0 0 */4 * * ?")
+	public void saveViewAndLikeToMySql(){
+
+		int totalView = 0;
+		int totalLike = 0;
+
+		//统计博文浏览量
 		Set<ZSetOperations.TypedTuple<Object>> blogView = redisUtils.zsGet("blogView");
 		if(blogView != null && blogView.size() != 0){
 			for (ZSetOperations.TypedTuple<Object> view : blogView) {
@@ -81,18 +91,14 @@ public class RedisScheduled {
 				int id = (int) view.getValue();
 				assert score != null;
 				int count = score.intValue();
+				totalView += count;
 				blogService.updateView(id,count);
 				log.info("日期:{}--博客:{}--被访问了{}次",new Date(),id,score.intValue());
 			}
 			redisUtils.del("blogView");
 		}
-	}
 
-	/**
-	 * 统计点赞数
-	 */
-	@Scheduled(cron = "0 0 */2 * * ?")
-	public void saveLikeToMySql(){
+		//统计博文点赞量
 		Set<ZSetOperations.TypedTuple<Object>> blogLike = redisUtils.zsGet("blogLike");
 		UpdateWrapper<Blog> updateWrapper = new UpdateWrapper<>();
 		if(blogLike != null && blogLike.size() != 0){
@@ -101,6 +107,7 @@ public class RedisScheduled {
 				int id = (int) like.getValue();
 				assert score != null;
 				int count = score.intValue();
+				totalLike += count;
 				updateWrapper.eq("id",id).setSql("likes = likes + " + count);
 				blogService.update(updateWrapper);
 				updateWrapper.clear();
@@ -108,6 +115,12 @@ public class RedisScheduled {
 			}
 			redisUtils.del("blogLike");
 		}
+		UpdateWrapper<Site> wrapper = new UpdateWrapper<>();
+		wrapper.eq("id",1)
+				.setSql("views = views + " + totalView)
+				.setSql("likes = likes + " + totalLike);
+		siteService.update(wrapper);
 	}
+
 
 }

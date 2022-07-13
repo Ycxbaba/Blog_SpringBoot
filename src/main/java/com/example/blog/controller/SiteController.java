@@ -25,4 +25,10 @@ public class SiteController {
 	public Result updateSite(@RequestBody Site site){
 		return siteService.updateSite(site);
 	}
+
+	@PreAuthorize("hasAnyAuthority('admin','superAdmin')")
+	@GetMapping("/siteMsg")
+	public Result allSite(){
+		return siteService.getAllSite();
+	}
 }

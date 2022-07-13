@@ -1,6 +1,8 @@
 package com.example.blog.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.example.blog.entity.bean.Message;
 import com.example.blog.entity.query.QueryMessage;
@@ -24,9 +26,23 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 	@Override
 	public Result getMessages(QueryMessage queryMessage) {
 		LambdaQueryWrapper<Message> queryWrapper = new LambdaQueryWrapper<>();
-		queryWrapper.eq(Message::getDeleted,queryMessage.getDeleted());
-		List<Message> list = super.list(queryWrapper);
-		return Result.success(list);
+		queryWrapper.orderBy(true,false,Message::getCreateTime);
+		if(queryMessage.getQq() != null){
+			queryWrapper.eq(Message::getQq,queryMessage.getQq());
+		}
+		if(queryMessage.getDeleted() != null){
+			queryWrapper.eq(Message::getDeleted,queryMessage.getDeleted());
+		}
+		if(queryMessage.getPageSize() != null && queryMessage.getPageNum() != null){
+			Page<Message> message = new Page<>(queryMessage.getPageNum(),queryMessage.getPageSize());
+			message = super.page(message, queryWrapper);
+			return Result.success(message);
+		}else {
+			List<Message> message = super.list(queryWrapper);
+			return Result.success(message);
+		}
+
+
 	}
 
 	@Override
@@ -58,7 +74,7 @@ public class MessageServiceImpl extends ServiceImpl<MessageMapper, Message>
 	public Result recoverMessage(Integer id) {
 		Message message = new Message();
 		message.setId(id);
-		message.setDeleted(1);
+		message.setDeleted(0);
 		if (!super.updateById(message)) {
 			throw new CommonException("600","恢复失败");
 		}

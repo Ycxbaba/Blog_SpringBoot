@@ -14,4 +14,6 @@ public interface SiteService extends IService<Site> {
 	Result initSite();
 
 	Result updateSite(Site site);
+
+	Result getAllSite();
 }
